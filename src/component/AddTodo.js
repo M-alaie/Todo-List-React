@@ -1,15 +1,22 @@
-import React, { useState } from "react";
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useState, useContext } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
+import TodoContext from "../Context/Context";
 
 function formAddTodo(props) {
-console.log(useState);
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+
+// console.log(useState);
+ 
+  const todosContext=useContext(TodoContext)
+  console.log(todosContext);
+
+  
   const [text,settext]=useState('')
 
   
-  let formHandle = (e) => {
+  let SubmitForm = (e) => {
     e.preventDefault();
-    props.add(text)
+    todosContext.add(text)
     
     settext(""); // Clear input field after adding todo
   };
@@ -17,7 +24,7 @@ console.log(useState);
     settext(e.target.value)
   };
   return (
-    <form onSubmit={formHandle} className="form-inline">
+    <form onSubmit={SubmitForm} className="form-inline">
       <div className="form-group d-flex">
         <input
           type="text"
