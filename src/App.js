@@ -10,11 +10,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import Context
 
 import TodoContext from "./Context/Context";
+import authContext from "./Context/auth";
 
 class App extends PureComponent {
   state = {
     todos: [],
     statusDone: false,
+    statusLogin:false
   };
 
   addTodo(text) {
@@ -74,10 +76,18 @@ class App extends PureComponent {
 
     let pTageStyle = {
       color: "red",
-      fontSize: "20px",
+      fontSize: "20px", 
     };
     return (
-      <TodoContext.Provider
+     <authContext.Provider value={{
+
+      statusLogin:this.state.statusLogin,
+      login:()=>this.setState({statusLogin:true}),
+      logOut:()=>this.setState({statusLogin:false})
+
+     }
+     }>
+       <TodoContext.Provider
         value={{
           todos: this.state.todos,
           add: this.addTodo.bind(this),
@@ -152,6 +162,7 @@ class App extends PureComponent {
           </main>
         </div>
       </TodoContext.Provider>
+     </authContext.Provider>
     );
   }
 }
