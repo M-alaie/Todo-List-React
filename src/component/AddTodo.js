@@ -2,7 +2,7 @@
 // import React, { useState, useContext } from "react";
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import TodoContext from "../Context/Context";
+
 
 // function formAddTodo(props) {
 
@@ -42,7 +42,7 @@ import TodoContext from "../Context/Context";
 // }
 class formAddTodo extends Component{
    
- static contextType=TodoContext
+ 
   state={
     text:''
   }
@@ -50,7 +50,7 @@ class formAddTodo extends Component{
   
   SubmitForm (e) {
     e.preventDefault();
-    this.context.add(this.state.text)
+    this.props.add(this.state.text)
     
     this.setState({text:''}); // Clear input field after adding todo
   };

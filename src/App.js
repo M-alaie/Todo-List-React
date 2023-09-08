@@ -7,10 +7,7 @@ import "./App.css";
 import Badge from "react-bootstrap/Badge";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// import Context
 
-import TodoContext from "./Context/Context";
-import authContext from "./Context/auth";
 
 class App extends PureComponent {
   state = {
@@ -71,7 +68,10 @@ class App extends PureComponent {
     );
 
     let NewListTodos = filterTodos.map((item) => (
-      <TodoList item={item}></TodoList>
+      <TodoList item={item}  deleted={this.dleted.bind(this)}
+      done={this.changeDone.bind(this)}
+      edited={this.EditTodo.bind(this)}>
+      </TodoList>
     ));
 
     let pTageStyle = {
@@ -79,25 +79,16 @@ class App extends PureComponent {
       fontSize: "20px", 
     };
     return (
-     <authContext.Provider value={{
-
-      statusLogin:this.state.statusLogin,
-      login:()=>this.setState({statusLogin:true}),
-      logOut:()=>this.setState({statusLogin:false})
-
-     }
-     }>
-       <TodoContext.Provider
-        value={{
-          todos: this.state.todos,
-          add: this.addTodo.bind(this),
-          deleted: this.dleted.bind(this),
-          done: this.changeDone.bind(this),
-          edit:this.EditTodo.bind(this)
-        }}
-      >
+    
+      
+      
         <div className="App">
-          <Headers></Headers>
+          <Headers 
+          statusLogin={this.state.statusLogin} 
+          login={()=>this.setState({statusLogin:true})} 
+          logOut={()=>this.setState({statusLogin:false})}>
+
+          </Headers>
           <main>
             <section className="bg-light">
               <div className="container d-flex flex-column align-items-center">
@@ -105,7 +96,7 @@ class App extends PureComponent {
                 <p className="lead text-muted">
                   To get started, add some items to your list:
                 </p>
-                <FormAddTodo></FormAddTodo>
+                <FormAddTodo add={this.addTodo.bind(this)} ></FormAddTodo>
               </div>
             </section>
             <div className="todosList mt-5">
@@ -161,8 +152,7 @@ class App extends PureComponent {
             </div>
           </main>
         </div>
-      </TodoContext.Provider>
-     </authContext.Provider>
+     
     );
   }
 }

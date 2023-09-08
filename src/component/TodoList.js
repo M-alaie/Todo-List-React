@@ -1,18 +1,18 @@
-import React,{useContext, useState} from 'react';
+import React,{ useState} from 'react';
 import EditTodo from "./EditTodo"
-import TodoContext from '../Context/Context';
+
 
 
 function TodoList(props){
-    let {item}=props
+    let {item ,deleted ,done,edited}=props
 
-    const todoListContext=useContext(TodoContext)
+    
     
     let deletedTodos=()=>{
-        todoListContext.deleted(item.id)
+        deleted(item.id)
     }
     let edithandler=(text)=>{
-        todoListContext.edit(item.id,text)
+        edited(item.id,text)
         setEdit(false)
     }
 
@@ -27,7 +27,7 @@ function TodoList(props){
                         {item.text}
                     </div>
                     <div>
-                    <button type="button" className={`btn  btn-sm ms-2 ${item.isComplete ?"btn-success":"btn-warning"}`} onClick={()=>todoListContext.done(item.id)} >{item.isComplete?'done' : 'undone'}</button>
+                    <button type="button" className={`btn  btn-sm ms-2 ${item.isComplete ?"btn-success":"btn-warning"}`} onClick={()=>done(item.id)} >{item.isComplete?'done' : 'undone'}</button>
                     <button type="button" className="btn btn-info btn-sm ms-2"  onClick={()=> setEdit(true)}>edit</button>
     
                         
