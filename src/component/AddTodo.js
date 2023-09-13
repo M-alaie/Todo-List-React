@@ -3,6 +3,7 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import TodoContext from "../Context/Context";
+import axios from "axios" 
 
 // function formAddTodo(props) {
 
@@ -46,14 +47,22 @@ class formAddTodo extends Component{
   state={
     text:''
   }
-
-  
   SubmitForm (e) {
     e.preventDefault();
-    this.context.add(this.state.text)
+    // this.context.add(this.state.text)
+    // ajax
+    if(this.state.text.length > 1){
+    let todo={
+      text:this.state.text,
+      isComplete:false
+    }
+    axios.post('https://todolist-985ee-default-rtdb.asia-southeast1.firebasedatabase.app/todo.json',todo)
+    .then(response=>({todo:{...todo,key:response.data.name}}))
+    .catch(error=>console.log(error))
     
     this.setState({text:''}); // Clear input field after adding todo
   };
+ }
    changeInput(e){
     this.setState({
       text:e.target.value

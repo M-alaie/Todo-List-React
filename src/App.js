@@ -6,6 +6,7 @@ import TodoList from "./component/TodoList";
 import "./App.css";
 import Badge from "react-bootstrap/Badge";
 import "bootstrap/dist/css/bootstrap.min.css";
+import todoAPI from "./Axios/todoApl"
 
 // import Context
 
@@ -16,46 +17,88 @@ class App extends PureComponent {
   state = {
     todos: [],
     statusDone: false,
-    statusLogin:false
+    statusLogin:false,
+    loading:false
+
   };
 
-  addTodo(text) {
-    let NewTodo = [{ id: Math.random(), isComplete: false, text: text }];
-    this.setState((preState) => {
-      return { todos: [...preState.todos, ...NewTodo] };
-    });
-    console.log(...NewTodo);
+
+  // add todo form firebase
+  
+ componentDidMount() {
+  this.setState({loading:true})
+  
+    this.fetchTodosFromFirebase();
+    console.log('[app.js ] is DidMount');
   }
+
+  fetchTodosFromFirebase() {
+    
+    todoAPI.get('todo.json')
+      .then((response) => {
+        console.log(response);
+        this.setState({loading:false})
+
+        const todosData = response.data;
+
+          const todosArray = Object.entries(todosData).map(([key, value]) => ({
+            ...value,
+            key,
+          }));
+
+          this.setState(()=>{
+            return{
+              todos:[...todosArray]
+            }
+          })
+          console.log(this.state.todos);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+    
+    // eslint-disable-next-line no-unused-expressions
+ 
+
+
+  // // addTodo(todo) {
+  // //   let NewTodo = [{ id: Math.random(), isComplete: false, text: todo.text }];
+  // //   this.setState((preState) => {
+  // //     return { todos: [...preState.todos, NewTodo] };
+  // //   });
+  //   // console.log(...NewTodo);
+  // }
   toggleBadge(status) {
     this.setState({ statusDone: status });
   }
   // deletedTodos
-  dleted(key) {
+  deleted(key) {
     this.setState((preState) => {
       return {
-        todos: preState.todos.filter((item) => item.id !== key),
+        todos: preState.todos.filter((item) => item.key!==key)
       };
     });
   }
   changeDone(key) {
-    let findTodos = this.state.todos.find((item) => item.id === key);
-    let filterTodos = this.state.todos.filter((item) => item.id !== key);
+    let findTodos = this.state.todos.find((item) => item.key === key);
+    let filterTodos = this.state.todos.filter((item) => item.key !== key);
     findTodos.isComplete =! findTodos.isComplete;
 
     this.setState({
       todos: [...filterTodos, findTodos],
     });
-    console.log(findTodos);
-    console.log(filterTodos);
+    // console.log(findTodos);
+    // console.log(filterTodos);
   }
 
   EditTodo(key,text){
-    let EditTodoFind=this.state.todos.find((find)=>find.id===key)
+    let EditTodoFind=this.state.todos.find((find)=>find.key===key)
     console.log(EditTodoFind);
     EditTodoFind.text=text
 
 
-    let filterTodos = this.state.todos.filter((item) => item.id !== key);
+    let filterTodos = this.state.todos.filter((item) => item.key !== key);
 
     console.log(filterTodos);
     this.setState({
@@ -67,11 +110,15 @@ class App extends PureComponent {
     // let NewListTodos=this.state.todos.map(item=><TodoList text={item.text} key={item.id}></TodoList>)
 
     let filterTodos = this.state.todos.filter(
-      (item) => item.isComplete === this.state.statusDone
+      (item) =>{return item.isComplete === this.state.statusDone
+     
+      }
     );
+    
 
     let NewListTodos = filterTodos.map((item) => (
       <TodoList item={item}></TodoList>
+     
     ));
 
     let pTageStyle = {
@@ -90,8 +137,8 @@ class App extends PureComponent {
        <TodoContext.Provider
         value={{
           todos: this.state.todos,
-          add: this.addTodo.bind(this),
-          deleted: this.dleted.bind(this),
+          // add: this.addTodo.bind(this),
+          deleted: this.deleted.bind(this),
           done: this.changeDone.bind(this),
           edit:this.EditTodo.bind(this)
         }}
@@ -108,7 +155,11 @@ class App extends PureComponent {
                 <FormAddTodo></FormAddTodo>
               </div>
             </section>
-            <div className="todosList mt-5">
+            {
+              this.state.loading
+              ? <h3>loading Data ....</h3>
+              :(
+                <div className="todosList mt-5">
               <div className="container">
                 <div className="d-flex flex-column align-items-center ">
                   <nav className="col-6 mb-3">
@@ -159,6 +210,8 @@ class App extends PureComponent {
                 </div>
               </div>
             </div>
+              )
+            }
           </main>
         </div>
       </TodoContext.Provider>

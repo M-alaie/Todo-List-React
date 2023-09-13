@@ -1,6 +1,7 @@
 import React,{useContext, useState} from 'react';
 import EditTodo from "./EditTodo"
 import TodoContext from '../Context/Context';
+import todoAPI from "../Axios/todoApl"
 
 
 function TodoList(props){
@@ -9,11 +10,26 @@ function TodoList(props){
     const todoListContext=useContext(TodoContext)
     
     let deletedTodos=()=>{
-        todoListContext.deleted(item.id)
+        todoAPI.delete(`todo/${item.key}.json`)
+        .then(Response=>{console.log(Response.data);
+            todoListContext.deleted(item.key)
+        }
+        )
+        .catch(err=>console.log(err))
     }
+   
+    
     let edithandler=(text)=>{
-        todoListContext.edit(item.id,text)
+        todoAPI.put(`todo/${item.key}.json`,{isComplete:item.isComplete,text:text})
+        .then(Response=>console.log(Response))
+        todoListContext.edit(item.key,text)
         setEdit(false)
+    }
+    let doneHandler=()=>{
+        todoAPI.put(`todo/${item.key}.json`,{isComplete:!item.isComplete,text:item.text})
+        .then(Response=>console.log(Response))
+        todoListContext.done(item.key)
+
     }
 
    const [edit,setEdit]=useState(false)
@@ -27,7 +43,7 @@ function TodoList(props){
                         {item.text}
                     </div>
                     <div>
-                    <button type="button" className={`btn  btn-sm ms-2 ${item.isComplete ?"btn-success":"btn-warning"}`} onClick={()=>todoListContext.done(item.id)} >{item.isComplete?'done' : 'undone'}</button>
+                    <button type="button" className={`btn  btn-sm ms-2 ${item.isComplete ?"btn-success":"btn-warning"}`} onClick={doneHandler} >{item.isComplete?'done' : 'undone'}</button>
                     <button type="button" className="btn btn-info btn-sm ms-2"  onClick={()=> setEdit(true)}>edit</button>
     
                         
